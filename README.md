@@ -36,7 +36,7 @@ Want the result to start with your search string? use the `^` like: `^word` (the
 Want the result to end with your search string? use the `$` like: `word$` (the `$` will be replaced by the 'delimiter')
 
 **regular expression?**: are the extra options not enough, you can unleash the full power of regular expressions!\
-There is one important note: **do not use `.*`** to catch "anything". That could bleed into multiple id's! use: **`[*]`** in stead!\
+There is one important note: **do not use `.*`** to catch "anything". That could bleed into multiple id's! use: **`[*]`** in stead!
 
 ## Examples:
 Lets assume you have an object that could contain the key `image` (using the default settings shown above):
