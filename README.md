@@ -39,7 +39,7 @@ Want the result to end with your search string? use the `$` like: `word$` (the `
 There is one important note: **do not use `.*`** to catch "anything". That could bleed into multiple id's! use: **`[*]`** in stead!\
 
 ## Examples:
-Lets assume you have an object that could contain the key `image` (with the default settings shown above):\
+Lets assume you have an object that could contain the key `image` (using the default settings shown above):
 
 You want to get the **first object** that contains the word image:\
 `let result = jsonFastSearch(jsonData, 'image' );`\
