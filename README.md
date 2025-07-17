@@ -29,7 +29,7 @@ you can choose server results to be returned:\
 **object**: get all the results in an object matching the search\
 **array**: get all the id's in an array matching the search
 
-The exiting part is the **search** variable!
+The exiting part is the **search** variable!\
 **simply a string?**: simply put it in there\
 Want a wildcard? use the character `*` like: `this*that` (the `*` will be replaced by a nifty regex excluding the id field, so that a match will be only be made within one record\
 Want the result to start with your search string? use the `^` like: `^word` (the `^` will be replaced by the 'delimiter')\
