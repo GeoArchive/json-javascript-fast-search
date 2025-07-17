@@ -23,10 +23,10 @@ The basics are quite self explanetory:
     debug        : 0,      // set to > 0 for debugging
   };
 ```
-you can choose server results to be returned:
-**first**: get the first complete object that contains the search result
-**firstpos**: get the index position of the first object that contains the search result
-**object**: get all the results in an object matching the search
+you can choose server results to be returned:\
+**first**: get the first complete object that contains the search result\
+**firstpos**: get the index position of the first object that contains the search result\
+**object**: get all the results in an object matching the search\
 **array**: get all the id's in an array matching the search
 
 The exiting part is the **search** variable!
