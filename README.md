@@ -59,7 +59,7 @@ You want to get all the objects that have an image value:\
 Where `"` is the same as your delimiter
 
 # I give to you, you..
-The GeoARchive project contains quite a bit of FOSS software, so I think it's only fair to give something back every now and then and you might have the need fot this tool also, so here it is!
+The GeoArchive project contains quite a bit of FOSS software, so I think it's only fair to give something back every now and then and you might have the need fot this tool also, so here it is!
 
 **Like the work?** You'll be surprised how much time goes into things like this..\
 Be my hero, think about the time this script saved you, and (offcourse) how happy you are now that you found it and it works just like you wanted.
