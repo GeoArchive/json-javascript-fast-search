@@ -4,7 +4,7 @@ You have a json object that is an array of objects containing a primary key? Fin
 This function was developed for the GeoArchive project.\
 **Take a look**: [general info Geoarchive >>](https://www.geoarchief.eu)  /  [image library 'in action' >>](https://www.geoarchief.nl/C001)
 
-Json objects can becomde **big**. In our case easily over 10Mb. Creating a simple "for loop" to match what was needed to be found coud take up to several minutes. Then [mrAceT](https://github.com/mrAceT) had a great idea.. splitting things up via the native JavsaSCript split function.. and after some extra nifty regular expressions.. and the created search function gives results is a split second! (litteraly;)
+Json objects can becomde **big**. In our case easily over 10Mb. Creating a simple "for loop" to match what was needed to be found could take up to several minutes. Then [mrAceT](https://github.com/mrAceT) had a great idea.. splitting things up via the native JavaScript split function.. and after some extra nifty regular expressions.. the created search function gives results in a split second! (litteraly;)
 
 # The settings
 The basics are quite self explanetory:
