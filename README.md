@@ -47,15 +47,15 @@ The first variable in the function call can be a stringified json string, or a j
 When the second variable in the function call is a string, that will become the search command, otherwise it needs to be an object with what you want different then your set defaults.
 
 You want to get the first key of an object that contains the word image:\
-`let result = jsonFastSearch(jsonData, { search: 'image', return : 'firstpos' );`\
+`let result = jsonFastSearch(jsonData, { search: 'image', return : 'firstpos' } );`\
 Now you have the position, **not** the key, so to get the key: `result = jsonData[result].id;` 
 
 You want to get all the keys that have an image value:\
-`let result = jsonFastSearch(jsonData, { search: '/"image"\s*:\s*"[^"]/',return: 'array' });`\
+`let result = jsonFastSearch(jsonData, { search: '/"image"\s*:\s*"[^"]/', return: 'array' } );`\
 Where `"` is the same as your delimiter
 
 You want to get all the objects that have an image value:\
-`let result = jsonFastSearch(jsonData, { search: '/"image"\s*:\s*"[^"]/',return: 'object' });`\
+`let result = jsonFastSearch(jsonData, { search: '/"image"\s*:\s*"[^"]/', return: 'object' } );`\
 Where `"` is the same as your delimiter
 
 # I give to you, you..
