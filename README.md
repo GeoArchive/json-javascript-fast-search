@@ -1,4 +1,4 @@
-# json javascript : simple & fast Search
+# json javascript : fast Search
 You have a json object that is an array of objects containing a primary key? Find things FAST with this function, it's just under 200 lines of commented and uncompressed code!
 
 This function was developed for the GeoArchive project.\
