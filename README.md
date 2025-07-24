@@ -13,7 +13,7 @@ The basics are quite self explanetory:
     delimiter    : '"',    // the character that is the delimiter of the key / value
     id           : 'id',   // primary key
     search       : '',     // search string / 'regex' => [*] = special wildcard : negativeIdPattern
-    searchSpecial: true,   // match special characters, like: match an a-acute char to an a and &aacute;
+    searchSpecial: 'auto', // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
     idPos        : 'auto', // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
     idPosLast    : 'after',// before | after (last result, default expectation: after )
@@ -57,6 +57,10 @@ Where `"` is the same as your delimiter
 You want to get all the objects that have an image value:\
 `let result = jsonFastSearch(jsonData, { search: '/"image"\s*:\s*"[^"]/', return: 'object' } );`\
 Where `"` is the same as your delimiter
+
+# version history
+v2025-07 fixed bugs and improved search\
+v2025-06 first commit
 
 # I give to you, you..
 The GeoArchive project contains quite a bit of FOSS software, so I think it's only fair to give something back every now and then and you might have the need fot this tool also, so here it is!

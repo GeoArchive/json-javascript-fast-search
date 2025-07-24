@@ -1,5 +1,5 @@
 /* *********************************************************************************** */
-/*       2025 - 2025  code created by Eesger Toering / knoop.frl / GeoArchive.eu       */
+/*    version: 2025-07 * code created by Eesger Toering / knoop.frl / GeoArchive.eu    */
 /*                 You are ALLOWED to use this library at your own risk                */
 /*     Like the work? You'll be surprised how much time goes into things like this..   */
 /*                Keep this text in place & be my hero, support my work:               */
@@ -11,7 +11,7 @@ function jsonFastSearch(jsonData, vars = {}) {
     delimiter    : '"',    // the character that is the delimiter of the key / value
     id           : 'id',   // primary key
     search       : '',     // search string / 'regex' => [*] = special wildcard : negativeIdPattern
-    searchSpecial: true,   // match special characters, like: match an a-acute char to an a and &aacute;
+    searchSpecial: 'auto', // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
     idPos        : 'auto', // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
     idPosLast    : 'after',// before | after (last result, default expectation: after )
@@ -43,8 +43,9 @@ function jsonFastSearch(jsonData, vars = {}) {
   function parseSearchRegex(input, vars= {}) {
     if (typeof input !== 'string') return null;
 
-    input = input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    if (vars.searchSpecial) {
+    if ( vars.searchSpecial === true
+     || (vars.searchSpecial === 'auto' && !(input.startsWith('/') && input.lastIndexOf('/') > 0) )
+    ) {
       input = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/(ae|[aeoui])/g, '(?:$1|&$1[a-z]{1,5};)');
     }
 
@@ -54,15 +55,17 @@ function jsonFastSearch(jsonData, vars = {}) {
         input = input.replace('[*]',negativeIdPattern);
       }
       const lastSlash = input.lastIndexOf('/');
-      const pattern = input.slice(1, lastSlash);
+      const pattern = input.slice(1, lastSlash).replace(/(^|[^\\])\((?!\?\:)/g,'$1(?:'); // make groups non capturing!
       const flags = input.slice(lastSlash + 1);
+      vars.debug>0 && console.log('regex (jsonFastSearch) > '+pattern+' | '+flags);
       try {
-        return new RegExp(pattern, flags);
+        return new RegExp('('+pattern+')', flags);
       } catch (e) {
         console.warn('Invalid regex flags or pattern:', input);
         return null;
       }
     } else {
+      input = input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       if (typeof vars.id != 'undefined' && vars.id.length > 0) {
         const negativeIdPattern = `.(?!${vars.delimiter}${vars.id}${vars.delimiter}\s*:)*`;
         input = input.replace(/([^\.\{\}\)\(])\*/,'$1'+negativeIdPattern);
@@ -71,11 +74,11 @@ function jsonFastSearch(jsonData, vars = {}) {
       input = input.replace(/\$$/,vars.delimiter);
     }
     // Fallback: escape and make case-insensitive by default
-    return new RegExp(input, 'i');
+    return new RegExp('('+input+')', 'i');
   }
   vars.searchRegex = parseSearchRegex(vars.search,vars);
   if (!vars.searchRegex) {
-    console.error('Invalid search regex');
+    console.error('jsonFastSearch: search regex');
     return null;
   }
 
@@ -103,7 +106,7 @@ function jsonFastSearch(jsonData, vars = {}) {
                     "\t"+((match = /^"?([^",}\]]+)"?/.exec(splitParts2[ matchPos ])) !== null)+
                     "\t"+validated+
                     "\t"+splitParts2[ matchPos ].length+
-                    "\t"+splitParts2[ matchPos ]
+                    "\t"+splitParts2[ matchPos ]+' (jsonFastSearch)'
                    );
       }
     }
@@ -133,56 +136,56 @@ function jsonFastSearch(jsonData, vars = {}) {
       idMap.set(String(vars.Obj[i][vars.id]), i);
     }
   }
-
-  !vars.debug ? null : console.log(vars);
+  vars.debug>0 && console.log(vars,' (jsonFastSearch)');
   
   /* Split for search! --------------------------------------------------------------- */
   let splitParts = vars.Str.split(vars.searchRegex);
   let results = [];
 
-  !vars.debug ? null : console.log(splitParts,'length:'+splitParts.length);
+  vars.debug>0 && console.log(splitParts,'length:'+splitParts.length);
 
-  for (let i = 0; i < splitParts.length - 1; i++) {
+  for (let i = 0; i < splitParts.length - 2; i+=2) {
+    let splitStr = splitParts[i + 1];
     let idCandidate = null;
     vars.pos = i;
 
     if (vars.idPos === 'after' || (vars.idPos === 'auto' && vars.idPosLast === 'after')) {
-      idCandidate = extractId(splitParts[i + 1], 'after');
-      !vars.debug ? null : console.log('after1:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitParts[i+1]);
+      idCandidate = extractId(splitStr+splitParts[i + 2], 'after');
+      vars.debug>0 && console.log('after1:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
       if (idCandidate) {
         vars.idPosLast = 'after';
-        !vars.debug ? null : console.log('B:'+vars.idPosLast);
+        vars.debug>0 && console.log('B:'+vars.idPosLast);
       }
     }
 
     if (!idCandidate && (vars.idPos === 'before' || vars.idPos === 'auto')) {
-      idCandidate = extractId(splitParts[i],'before');
-      !vars.debug ? null : console.log('before:'+i+"\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitParts[i]);
+      idCandidate = extractId(splitParts[i]+splitStr,'before');
+      vars.debug>0 && console.log('before:'+i+"\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitParts[i]+splitStr+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
       if (idCandidate) {
         vars.idPosLast = 'before';
-        !vars.debug ? null : console.log('A:'+vars.idPosLast);
+        vars.debug>0 && console.log('A:'+vars.idPosLast);
       }
     }
  
     if (!idCandidate && vars.idPos === 'auto' && vars.idPosLast === 'before') {
-      idCandidate = extractId(splitParts[i + 1], 'after');
-      !vars.debug ? null : console.log('after2:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitParts[i+1]);
+      idCandidate = extractId(splitStr+splitParts[i + 2], 'after');
+      vars.debug>0 && console.log('after2:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
       if (idCandidate) {
         vars.idPosLast = 'after';
-        !vars.debug ? null : console.log('B:'+vars.idPosLast);
+        vars.debug>0 && console.log('B:'+vars.idPosLast);
       }
     }
 
-    !vars.debug ? null : console.log('final :'+i+"\t"+vars.idPosLast+"\t"+idCandidate+"\n____________________________________________________");
+    vars.debug>0 && console.log('final :'+i+"\t"+vars.idPosLast+"\t"+idCandidate+"\n____________________________________________________"+' (jsonFastSearch)');
     if (idCandidate) {
       if (vars.return === 'first'
        || vars.return === 'firstpos') return idMap.get(idCandidate);
@@ -190,6 +193,5 @@ function jsonFastSearch(jsonData, vars = {}) {
       if (vars.return === 'object'  ) results.push(idMap.get(idCandidate));
     }
   }
-
   return results;
 }
