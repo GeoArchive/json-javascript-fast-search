@@ -1,5 +1,5 @@
 /* *********************************************************************************** */
-/*    version: 2025-07 * code created by Eesger Toering / knoop.frl / GeoArchive.eu    */
+/*    version: 2025-08 * code created by Eesger Toering / knoop.frl / GeoArchive.eu    */
 /*                 You are ALLOWED to use this library at your own risk                */
 /*     Like the work? You'll be surprised how much time goes into things like this..   */
 /*                Keep this text in place & be my hero, support my work:               */
@@ -12,6 +12,7 @@ function jsonFastSearch(jsonData, vars = {}) {
     id           : 'id',   // primary key
     search       : '',     // search string / 'regex' => [*] = special wildcard : negativeIdPattern
     searchSpecial: 'auto', // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
+    seachIgnore  : ['id'], // exclude key values from positive search result for thset to []
     idPos        : 'auto', // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
     idPosLast    : 'after',// before | after (last result, default expectation: after )
@@ -23,6 +24,7 @@ function jsonFastSearch(jsonData, vars = {}) {
 
   if (typeof vars === 'string') { vars = { search: vars }; }
   vars = { ...defaults, ...vars };
+  vars.debug>0 && console.log('jsonFastSearch vars :',vars);
 
   /* Process input ------------------------------------------------------------------- */
   try {
@@ -40,16 +42,20 @@ function jsonFastSearch(jsonData, vars = {}) {
   }
 
   /* Regex compile ------------------------------------------------------------------- */
-  function parseSearchRegex(input, vars= {}) {
-    if (typeof input !== 'string') return null;
-
+  function parseSearchRegexSpecial(input, vars= {}) {
     if ( vars.searchSpecial === true
      || (vars.searchSpecial === 'auto' && !(input.startsWith('/') && input.lastIndexOf('/') > 0) )
     ) {
       input = input.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/(ae|[aeoui])/g, '(?:$1|&$1[a-z]{1,5};)');
     }
+    return input;
+  }
+
+  function parseSearchRegex(input, vars= {}) {
+    if (typeof input !== 'string') return null;
 
     if (input.startsWith('/') && input.lastIndexOf('/') > 0) {
+      input = parseSearchRegexSpecial(input,vars);
       if (typeof vars.id != 'undefined' && vars.id.length > 0) {
         const negativeIdPattern = `.(?!${vars.delimiter}${vars.id}${vars.delimiter}\s*:)*`;
         input = input.replace('[*]',negativeIdPattern);
@@ -57,11 +63,11 @@ function jsonFastSearch(jsonData, vars = {}) {
       const lastSlash = input.lastIndexOf('/');
       const pattern = input.slice(1, lastSlash).replace(/(^|[^\\])\((?!\?\:)/g,'$1(?:'); // make groups non capturing!
       const flags = input.slice(lastSlash + 1);
-      vars.debug>0 && console.log('regex (jsonFastSearch) > '+pattern+' | '+flags);
+      vars.debug>0 && console.log('jsonFastSearch regex > '+pattern+' | '+flags);
       try {
         return new RegExp('('+pattern+')', flags);
       } catch (e) {
-        console.warn('Invalid regex flags or pattern:', input);
+        console.warn('jsonFastSearch Invalid regex flags or pattern:', input);
         return null;
       }
     } else {
@@ -72,6 +78,7 @@ function jsonFastSearch(jsonData, vars = {}) {
       }
       input = input.replace(/^\^/,vars.delimiter);
       input = input.replace(/\$$/,vars.delimiter);
+      input = parseSearchRegexSpecial(input,vars);
     }
     // Fallback: escape and make case-insensitive by default
     return new RegExp('('+input+')', 'i');
@@ -118,7 +125,11 @@ function jsonFastSearch(jsonData, vars = {}) {
     const item = vars.Obj.find(obj => String(obj[vars.id]) === String(candidateId));
     if (!item) return false;
     if (!vars.searchRegex) return true;
-    
+    if (vars.seachIgnore.length) {
+      for (let i = 0; i < vars.seachIgnore.length; i++) {
+        delete item[ vars.seachIgnore[i] ] ;
+      }      
+    }
     return vars.searchRegex.test(JSON.stringify(item));
   }
   
@@ -142,7 +153,7 @@ function jsonFastSearch(jsonData, vars = {}) {
   let splitParts = vars.Str.split(vars.searchRegex);
   let results = [];
 
-  vars.debug>0 && console.log(splitParts,'length:'+splitParts.length);
+  vars.debug>0 && console.log(splitParts,'jsonFastSearch length:'+splitParts.length);
 
   for (let i = 0; i < splitParts.length - 2; i+=2) {
     let splitStr = splitParts[i + 1];
@@ -151,41 +162,41 @@ function jsonFastSearch(jsonData, vars = {}) {
 
     if (vars.idPos === 'after' || (vars.idPos === 'auto' && vars.idPosLast === 'after')) {
       idCandidate = extractId(splitStr+splitParts[i + 2], 'after');
-      vars.debug>0 && console.log('after1:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
+      vars.debug>0 && console.log('jsonFastSearch after1:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
       if (idCandidate) {
         vars.idPosLast = 'after';
-        vars.debug>0 && console.log('B:'+vars.idPosLast);
+        vars.debug>0 && console.log('jsonFastSearch B:'+vars.idPosLast);
       }
     }
 
     if (!idCandidate && (vars.idPos === 'before' || vars.idPos === 'auto')) {
       idCandidate = extractId(splitParts[i]+splitStr,'before');
-      vars.debug>0 && console.log('before:'+i+"\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitParts[i]+splitStr+' (jsonFastSearch)');
+      vars.debug>0 && console.log('jsonFastSearch before:'+i+"\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitParts[i]+splitStr+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
       if (idCandidate) {
         vars.idPosLast = 'before';
-        vars.debug>0 && console.log('A:'+vars.idPosLast);
+        vars.debug>0 && console.log('jsonFastSearch A:'+vars.idPosLast);
       }
     }
  
     if (!idCandidate && vars.idPos === 'auto' && vars.idPosLast === 'before') {
       idCandidate = extractId(splitStr+splitParts[i + 2], 'after');
-      vars.debug>0 && console.log('after2:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
+      vars.debug>0 && console.log('jsonFastSearch after2:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
       if (idCandidate) {
         vars.idPosLast = 'after';
-        vars.debug>0 && console.log('B:'+vars.idPosLast);
+        vars.debug>0 && console.log('jsonFastSearch B:'+vars.idPosLast);
       }
     }
 
-    vars.debug>0 && console.log('final :'+i+"\t"+vars.idPosLast+"\t"+idCandidate+"\n____________________________________________________"+' (jsonFastSearch)');
+    vars.debug>0 && console.log('jsonFastSearch final :'+i+"\t"+vars.idPosLast+"\t"+idCandidate+"\n____________________________________________________"+' (jsonFastSearch)');
     if (idCandidate) {
       if (vars.return === 'first'
        || vars.return === 'firstpos') return idMap.get(idCandidate);

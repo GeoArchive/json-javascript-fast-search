@@ -1,5 +1,5 @@
 # json javascript : fast Search
-You have a json object that is an array of objects containing a primary key? Find things FAST with this function, it's just under 200 lines of commented and uncompressed code!
+You have a json object that is an array of objects containing a primary key? Find things FAST with this function, it's just under 200 lines (without the comment lines) and uncompressed code!
 
 This function was developed for the GeoArchive project.\
 **Take a look**: [general info Geoarchive >>](https://www.geoarchief.eu)  /  [image library 'in action' >>](https://www.geoarchief.nl/C001)
@@ -14,6 +14,7 @@ The basics are quite self explanetory:
     id           : 'id',   // primary key
     search       : '',     // search string / 'regex' => [*] = special wildcard : negativeIdPattern
     searchSpecial: 'auto', // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
+    seachIgnore  : ['id'], // exclude key values from positive search result for nothing set to []
     idPos        : 'auto', // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
     idPosLast    : 'after',// before | after (last result, default expectation: after )
@@ -59,6 +60,7 @@ You want to get all the objects that have an image value:\
 Where `"` is the same as your delimiter
 
 # version history
+v2025-08 fixed bugs and improved regex search and added option seachIgnore\
 v2025-07 fixed bugs and improved search\
 v2025-06 first commit
 
