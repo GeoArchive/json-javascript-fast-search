@@ -41,7 +41,14 @@ There is one important note: **do not use `.*`** to catch "anything". That could
 
 ## Examples:
 Lets assume you have an object that could contain the key `image` (using the default settings shown above):
-
+```
+jsonData = [
+  {"id":"id1",                     ,"description":"only id & description"},
+  {"id":"id2","image":""           ,"description":"empty key 'image' will also match"},
+  {"id":"id3","image":"picture.jpg","description":"nice image"},
+  {"id":"id4","image":"picture.png","description":"nice image uncompressed"},
+]
+```
 You want to get the **first object** that contains the word image:\
 `let result = jsonFastSearch(jsonData, 'image' );`\
 The first variable in the function call can be a stringified json string, or a json object (there is no speed difference, both are needed, so the other must be created).\
