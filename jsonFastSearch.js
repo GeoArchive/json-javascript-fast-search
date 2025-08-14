@@ -15,7 +15,7 @@ function jsonFastSearch(jsonData, vars = {}) {
     seachIgnore  : ['id'], // exclude key values from positive search result for thset to []
     idPos        : 'auto', // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
-    idPosLast    : 'after',// before | after (last result, default expectation: after )
+    idPosLast    : 'before',// before | after (last result, default expectation: after )
     return       : 'first',// first | firstpos | object | array
     Str          : '',     // stringified json data
     Obj          : null,   // json object
@@ -122,7 +122,7 @@ function jsonFastSearch(jsonData, vars = {}) {
 
   /* Validate id in data ------------------------------------------------------------- */
   function validateIdInData(candidateId) {
-    const item = vars.Obj.find(obj => String(obj[vars.id]) === String(candidateId));
+    const item = { ...vars.Obj.find(obj => String(obj[vars.id]) === String(candidateId)) };
     if (!item) return false;
     if (!vars.searchRegex) return true;
     if (vars.seachIgnore.length) {
