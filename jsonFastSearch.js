@@ -1,25 +1,25 @@
 /* *********************************************************************************** */
-/*     version: 1.0.9 * code created by Eesger Toering / knoop.frl / GeoArchive.eu     */
-/*                 You are ALLOWED to use this library at your own risk                */
-/*     Like the work? You'll be surprised how much time goes into things like this..   */
-/*                Keep this text in place & be my hero, support my work:               */
+/*   version: 1.00.009 * code created by Eesger Toering / knoop.frl / GeoArchive.eu    */
+/*                You are ALLOWED to use this library at your own risk                 */
+/*    Like the work? You'll be surprised how much time goes into things like this..    */
+/*               Keep this text in place & be my hero, support my work:                */
 /*          https://github.com/GeoArchive/json-javascript-simple-fast-search           */
 /* *********************************************************************************** */
 function jsonFastSearch(jsonData, vars = {}) {
   // Default vars
   let defaults = {
-    delimiter    : '"',    // the character that is the delimiter of the key / value
-    id           : 'id',   // primary key
-    search       : '',     // search string / 'regex' => [*] = special wildcard : negativeIdPattern
-    searchSpecial: 'auto', // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
-    seachIgnore  : ['id'], // exclude key values from positive search result for thset to []
-    idPos        : 'auto', // auto | before | after (where is the id relative to the search)
+    delimiter    : '"',     // the character that is the delimiter of the key / value
+    id           : 'id',    // primary key
+    search       : '',      // search string / 'regex' => [*] = special wildcard : negativeIdPattern
+    searchSpecial: 'auto',  // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
+    seachIgnore  : ['id'],  // exclude key values from positive search result for nothing set to []
+    idPos        : 'auto',  // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
     idPosLast    : 'before',// before | after (last result, default expectation: before )
-    return       : 'first',// first | firstpos | object | array
-    Str          : '',     // stringified json data
-    Obj          : null,   // json object
-    debug        : 0,      // set to > 0 for debugging
+    return       : 'first', // first | firstpos | object | array
+    Str          : '',      // stringified json data
+    Obj          : null,    // json object
+    debug        : 0,       // set to > 0 for debugging
   };
 
   if (typeof vars === 'string') { vars = { search: vars }; }
@@ -30,14 +30,18 @@ function jsonFastSearch(jsonData, vars = {}) {
   try {
     if (typeof jsonData === 'string') {
       vars.Str = jsonData;
-      vars.Obj = JSON.parse(vars.Str);
+      if (!vars.Obj) { vars.Obj = JSON.parse(vars.Str); }
     } else {
       vars.Obj = jsonData;
-      vars.Str = JSON.stringify(vars.Obj);
+      if (vars.Str.length==0) { vars.Str = JSON.stringify(vars.Obj); }
     }
     jsonData = null; // free the memory
   } catch (e) {
     console.error('Invalid JSON');
+    return null;
+  }
+  if (jsonData.length == 0) {
+    console.error('Empty JSON');
     return null;
   }
 
@@ -89,7 +93,11 @@ function jsonFastSearch(jsonData, vars = {}) {
     return null;
   }
 
-  if (!vars.search) return vars.return === 'object' ? vars.Obj : vars.Obj.map(x => x[vars.id]);
+  if (!vars.search) return vars.return === 'firstpos' ? 0 :
+                          (vars.return === 'first'    ? vars.Obj[0] :
+                          (vars.return === 'object'   ? vars.Obj :
+                           vars.Obj.map(x => x[vars.id]) // array
+                          ));
 
   /* Search for id in string part ---------------------------------------------------- */
   function extractId(part, direction) {

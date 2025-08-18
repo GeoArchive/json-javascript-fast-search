@@ -16,7 +16,7 @@ The basics are quite self explanetory:
     searchSpecial: 'auto',  // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
     seachIgnore  : ['id'],  // exclude key values from positive search result for nothing set to []
     idPos        : 'auto',  // auto | before | after (where is the id relative to the search)
-    //                        Only when set to 'auto' there will be validation
+    //                         Only when set to 'auto' there will be validation
     idPosLast    : 'before',// before | after (last result, default expectation: before )
     return       : 'first', // first | firstpos | object | array
     Str          : '',      // stringified json data
@@ -43,7 +43,7 @@ There is one important note: **do not use `.*`** to catch "anything". That could
 Lets assume you have an object that could contain the key `image` (using the default settings shown above):
 ```
 jsonData = [
-  {"id":"id1",                     ,"description":"only id & description"},
+  {"id":"id1",                      "description":"only id & description"},
   {"id":"id2","image":""           ,"description":"empty key 'image' will also match"},
   {"id":"id3","image":"picture.jpg","description":"nice image"},
   {"id":"id4","image":"picture.png","description":"nice image uncompressed"},
@@ -66,11 +66,19 @@ You want to get all the objects that have an image value:\
 `let result = jsonFastSearch(jsonData, { search: '/"image"\s*:\s*"[^"]/', return: 'object' } );`\
 Where `"` is the same as your delimiter
 
+**many searches on same json?**:\
+You can parse a json or a stringified json to the function via the first variable. If you perform many searches on the same json you can parse 'the other one' via the options to save the time of the conversion at each search, example:\
+`let result = jsonFastSearch(jsonData, { search: '/"image"\s*:\s*"[^"]/', return: 'object', Str:JSON.stringify(jsonData) } );`\
+Or if you your basis is the stringified json:
+`let result = jsonFastSearch(jsonStr, { search: '/"image"\s*:\s*"[^"]/', return: 'object', Obj:JSON.parse(jsonStr) } );`\
+
+
 # version history
-v1.0.9 changed versioning, default idPosLast:before is better, improved debugging
-v1.0.8 fixed bugs and improved regex search and added option seachIgnore\
-v1.0.7 fixed bugs and improved search\
-v1.0.6 first commit
+v1.00.010 added option to parse "the other one" for faster many repeated searches (Str & Obj)
+v1.00.009 changed versioning, default idPosLast:before is better, improved debugging
+v1.00.008 fixed bugs and improved regex search and added option seachIgnore\
+v1.00.007 fixed bugs and improved search\
+v1.00.006 first commit
 
 # I give to you, you..
 The GeoArchive project contains quite a bit of FOSS software, so I think it's only fair to give something back every now and then and you might have the need fot this tool also, so here it is!
