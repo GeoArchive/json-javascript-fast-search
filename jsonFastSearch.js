@@ -1,5 +1,5 @@
 /* *********************************************************************************** */
-/*    version: 2025-08 * code created by Eesger Toering / knoop.frl / GeoArchive.eu    */
+/*     version: 1.0.9 * code created by Eesger Toering / knoop.frl / GeoArchive.eu     */
 /*                 You are ALLOWED to use this library at your own risk                */
 /*     Like the work? You'll be surprised how much time goes into things like this..   */
 /*                Keep this text in place & be my hero, support my work:               */
@@ -15,7 +15,7 @@ function jsonFastSearch(jsonData, vars = {}) {
     seachIgnore  : ['id'], // exclude key values from positive search result for thset to []
     idPos        : 'auto', // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
-    idPosLast    : 'before',// before | after (last result, default expectation: after )
+    idPosLast    : 'before',// before | after (last result, default expectation: before )
     return       : 'first',// first | firstpos | object | array
     Str          : '',     // stringified json data
     Obj          : null,   // json object
@@ -106,10 +106,10 @@ function jsonFastSearch(jsonData, vars = {}) {
       }
       if (vars.debug) {
         let validated = match !== null ? validateIdInData(match) : null;
-        console.log('-extid:'+vars.pos+(direction=='after'?'+1':'')+
+        console.log('jsonFastSearch extractId:'+vars.pos+(direction=='after'?'+1':'')+
+                    "\t"+'|'+result+'|'+
                     "\t"+direction+
                     "\t"+matchPos+
-                    "\t"+'|'+result+'|'+
                     "\t"+((match = /^"?([^",}\]]+)"?/.exec(splitParts2[ matchPos ])) !== null)+
                     "\t"+validated+
                     "\t"+splitParts2[ matchPos ].length+
@@ -130,6 +130,7 @@ function jsonFastSearch(jsonData, vars = {}) {
         delete item[ vars.seachIgnore[i] ] ;
       }      
     }
+    console.log('jsonFastSearch validateIdInData:'+vars.id+': '+(vars.searchRegex.test(JSON.stringify(item))?'OK ':'- ')+JSON.stringify(item));
     return vars.searchRegex.test(JSON.stringify(item));
   }
   
@@ -162,7 +163,7 @@ function jsonFastSearch(jsonData, vars = {}) {
 
     if (vars.idPos === 'after' || (vars.idPos === 'auto' && vars.idPosLast === 'after')) {
       idCandidate = extractId(splitStr+splitParts[i + 2], 'after');
-      vars.debug>0 && console.log('jsonFastSearch after1:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
+      vars.debug>0 && console.log('jsonFastSearch after1:'+i+"+1\t"+idCandidate+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
@@ -174,7 +175,7 @@ function jsonFastSearch(jsonData, vars = {}) {
 
     if (!idCandidate && (vars.idPos === 'before' || vars.idPos === 'auto')) {
       idCandidate = extractId(splitParts[i]+splitStr,'before');
-      vars.debug>0 && console.log('jsonFastSearch before:'+i+"\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitParts[i]+splitStr+' (jsonFastSearch)');
+      vars.debug>0 && console.log('jsonFastSearch before:'+i+"\t"+idCandidate+"\t"+splitParts[i]+splitStr+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
@@ -186,7 +187,7 @@ function jsonFastSearch(jsonData, vars = {}) {
  
     if (!idCandidate && vars.idPos === 'auto' && vars.idPosLast === 'before') {
       idCandidate = extractId(splitStr+splitParts[i + 2], 'after');
-      vars.debug>0 && console.log('jsonFastSearch after2:'+i+"+1\t"+idCandidate+"\t"+validateIdInData(idCandidate)+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
+      vars.debug>0 && console.log('jsonFastSearch after2:'+i+"+1\t"+idCandidate+"\t"+splitStr+splitParts[i+2]+' (jsonFastSearch)');
       if (idCandidate && vars.idPos === 'auto' && !validateIdInData(idCandidate)) {
         idCandidate = null;
       }
@@ -196,7 +197,7 @@ function jsonFastSearch(jsonData, vars = {}) {
       }
     }
 
-    vars.debug>0 && console.log('jsonFastSearch final :'+i+"\t"+vars.idPosLast+"\t"+idCandidate+"\n____________________________________________________"+' (jsonFastSearch)');
+    vars.debug>0 && console.log('jsonFastSearch final :'+i+"\t"+vars.idPosLast+"\tOK:"+idCandidate+"\n____________________________________________________"+' (jsonFastSearch)');
     if (idCandidate) {
       if (vars.return === 'first'
        || vars.return === 'firstpos') return idMap.get(idCandidate);

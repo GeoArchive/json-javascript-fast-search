@@ -10,18 +10,18 @@ Json objects can becomde **big**. In our case easily over 10Mb. Creating a simpl
 The basics are quite self explanetory:
 ```
   let defaults = {
-    delimiter    : '"',    // the character that is the delimiter of the key / value
-    id           : 'id',   // primary key
-    search       : '',     // search string / 'regex' => [*] = special wildcard : negativeIdPattern
-    searchSpecial: 'auto', // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
-    seachIgnore  : ['id'], // exclude key values from positive search result for nothing set to []
-    idPos        : 'auto', // auto | before | after (where is the id relative to the search)
+    delimiter    : '"',     // the character that is the delimiter of the key / value
+    id           : 'id',    // primary key
+    search       : '',      // search string / 'regex' => [*] = special wildcard : negativeIdPattern
+    searchSpecial: 'auto',  // match special characters, like: match an a-acute char to an a and &aacute; auto = not for regex (gets messy fast..)
+    seachIgnore  : ['id'],  // exclude key values from positive search result for nothing set to []
+    idPos        : 'auto',  // auto | before | after (where is the id relative to the search)
     //                        Only when set to 'auto' there will be validation
-    idPosLast    : 'after',// before | after (last result, default expectation: after )
-    return       : 'first',// first | firstpos | object | array
-    Str          : '',     // stringified json data
-    Obj          : null,   // json object
-    debug        : 0,      // set to > 0 for debugging
+    idPosLast    : 'before',// before | after (last result, default expectation: before )
+    return       : 'first', // first | firstpos | object | array
+    Str          : '',      // stringified json data
+    Obj          : null,    // json object
+    debug        : 0,       // set to > 0 for debugging
   };
 ```
 you can choose serveral different results to be returned:\
@@ -67,9 +67,10 @@ You want to get all the objects that have an image value:\
 Where `"` is the same as your delimiter
 
 # version history
-v2025-08 fixed bugs and improved regex search and added option seachIgnore\
-v2025-07 fixed bugs and improved search\
-v2025-06 first commit
+v1.0.9 changed versioning, default idPosLast:before is better, improved debugging
+v1.0.8 fixed bugs and improved regex search and added option seachIgnore\
+v1.0.7 fixed bugs and improved search\
+v1.0.6 first commit
 
 # I give to you, you..
 The GeoArchive project contains quite a bit of FOSS software, so I think it's only fair to give something back every now and then and you might have the need fot this tool also, so here it is!
