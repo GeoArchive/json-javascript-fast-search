@@ -74,8 +74,8 @@ Or if you your basis is the stringified json:
 
 
 # version history
-v1.00.010 added option to parse "the other one" for faster many repeated searches (Str & Obj)
-v1.00.009 changed versioning, default idPosLast:before is better, improved debugging
+v1.00.010 added option to parse "the other one" for faster many repeated searches (Str & Obj)\
+v1.00.009 changed versioning, default idPosLast:before is better, improved debugging\
 v1.00.008 fixed bugs and improved regex search and added option seachIgnore\
 v1.00.007 fixed bugs and improved search\
 v1.00.006 first commit
