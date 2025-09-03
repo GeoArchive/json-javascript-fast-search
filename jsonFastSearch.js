@@ -1,5 +1,5 @@
 /* *********************************************************************************** */
-/*   version: 1.00.009 * code created by Eesger Toering / knoop.frl / GeoArchive.eu    */
+/*   version: 1.00.010 * code created by Eesger Toering / knoop.frl / GeoArchive.eu    */
 /*                You are ALLOWED to use this library at your own risk                 */
 /*    Like the work? You'll be surprised how much time goes into things like this..    */
 /*               Keep this text in place & be my hero, support my work:                */
@@ -40,8 +40,9 @@ function jsonFastSearch(jsonData, vars = {}) {
     console.error('Invalid JSON');
     return null;
   }
-  if (jsonData.length == 0) {
+  if (!vars.Obj || vars.Obj.length == 0) {
     console.error('Empty JSON');
+    console.trace();
     return null;
   }
 
